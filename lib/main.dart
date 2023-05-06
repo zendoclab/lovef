@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:lovef/chart.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,6 +55,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   String result = "nothing";
+  final chart = LineChartSample6();
 
   void _incrementCounter() {
     setState(() {
@@ -120,7 +123,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
               },
               child: const Text('Open Scanner'),
-            )
+            ),
+            chart
           ],
 
         ),
