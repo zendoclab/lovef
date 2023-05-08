@@ -133,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 setState(() {
                   if (res is String) {
                     result = res;
-                    items = result.split(",");
+                    items = result.trim().split(",");
                     var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items![0]));
                     var etime = double.parse("${time.hour}${time.minute}${time.second}");
                     items?.removeAt(0);
