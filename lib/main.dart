@@ -141,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     flitems.clear();
                     items?.forEach((e) {
                       flitems.add(FlSpot(etime+plus15,double.parse(e)));
-                      plus15 = plus15 + 15.0;
+                      plus15 = plus15 + 10.0;
                     });
                   }
                 });
