@@ -12,7 +12,7 @@ import 'dart:convert';
 // chart가 안 변함
 
 List<String>? items;
-late List<FlSpot> flitems;
+List<FlSpot> flitems = <FlSpot>[];
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,7 +65,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   String result = "nothing";
-  final chart = LineChartSample6();
   var etime = 0.0;
 
   void _incrementCounter() {
@@ -117,10 +116,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times: 2',
+              'You have pushed the button this many times: 3',
             ),
             Text(
-              '$flitems\n$result\n$items',
+              '$result\n$items',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             ElevatedButton(
@@ -137,9 +136,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     etime = double.parse("${time.hour}${time.minute}${time.second}");
                     items?.removeAt(0);
                     var plus15 = 0.0;
-                    flitems.clear();
+                    flitems?.clear();
                     items?.forEach((e) {
-                      flitems.add(FlSpot(etime+plus15,double.parse(e)));
+                      flitems?.add(FlSpot(etime+plus15,double.parse(e)));
                       plus15 = plus15 + 10.0;
                     });
 
@@ -151,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'barcode: $result\ntime: $etime',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            chart
+            flitems.isNotEmpty ? LineChartSample6() : const Text('')
           ],
 
         ),
