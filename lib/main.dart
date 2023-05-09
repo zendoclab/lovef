@@ -8,14 +8,11 @@ import 'dart:convert';
 // 2. qrcode data를 차트에 넣기
 // 3. 두개의 qrcode를 받아서 차트에 합치기
 
+// etime ? 5834, 5844, 5854, 5864
+// chart가 안 변함
 
 List<String>? items;
-List<FlSpot> flitems = const [
-  FlSpot(0, 3),
-  FlSpot(2, 1),
-  FlSpot(4, 2),
-  FlSpot(6, 1),
-];
+late List<FlSpot> flitems;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -69,6 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   String result = "nothing";
   final chart = LineChartSample6();
+  var etime = 0.0;
 
   void _incrementCounter() {
     setState(() {
@@ -99,6 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
+        child: SingleChildScrollView(
         child: Column(
           // Column is also a layout widget. It takes a list of children and
           // arranges them vertically. By default, it sizes itself to fit its
@@ -115,12 +114,13 @@ class _MyHomePageState extends State<MyHomePage> {
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
+
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times:',
+              'You have pushed the button this many times: 2',
             ),
             Text(
-              '$_counter\n\n$result',
+              '$flitems\n$result\n$items',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             ElevatedButton(
@@ -131,11 +131,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder: (context) => const SimpleBarcodeScannerPage(),
                     ));
                 setState(() {
-                  if (res is String) {
-                    result = res;
+                  result = res;
                     items = result.trim().split(",");
                     var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items![0]));
-                    var etime = double.parse("${time.hour}${time.minute}${time.second}");
+                    etime = double.parse("${time.hour}${time.minute}${time.second}");
                     items?.removeAt(0);
                     var plus15 = 0.0;
                     flitems.clear();
@@ -143,15 +142,20 @@ class _MyHomePageState extends State<MyHomePage> {
                       flitems.add(FlSpot(etime+plus15,double.parse(e)));
                       plus15 = plus15 + 10.0;
                     });
-                  }
+
                 });
               },
               child: const Text('Open Scanner'),
+            ),
+            Text(
+              'barcode: $result\ntime: $etime',
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             chart
           ],
 
         ),
+      ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () { _incrementCounter();},
@@ -209,10 +213,10 @@ class LineChartSample6 extends StatelessWidget {
   final spots = flitems;
 
   final spots2 = const [
-    FlSpot(0, 3),
-    FlSpot(2, 1),
-    FlSpot(4, 2),
-    FlSpot(6, 1),
+    FlSpot(0, 1),
+    FlSpot(3, 4),
+    FlSpot(7, 3),
+    FlSpot(8, 2),
   ];
 
   late double minSpotX;
