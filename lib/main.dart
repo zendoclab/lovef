@@ -4,15 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'dart:convert';
 
-// 1. 차트 안 찌그러지게 할것
-// 2. qrcode data를 차트에 넣기
-// 3. 두개의 qrcode를 받아서 차트에 합치기
-
-// etime ? 5834, 5844, 5854, 5864
-// chart가 안 변함
+// 1. 특정영역을 SNS공유로 공유
 
 List<String>? items;
+List<String>? items2;
 List<FlSpot> flitems = <FlSpot>[];
+List<FlSpot> flitems2 = <FlSpot>[];
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,15 +25,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -47,15 +35,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -63,65 +42,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  String result = "nothing";
+  String result = "";
   var etime = 0.0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: SingleChildScrollView(
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
 
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times: 3',
+              '4th',
             ),
+            flitems.isNotEmpty ? LineChartSample6() : const Text(''),
             Text(
-              '$result\n$items',
+              '',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            flitems.isEmpty ?
             ElevatedButton(
               onPressed: () async {
                 var res = await Navigator.push(
@@ -144,22 +85,56 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 });
               },
-              child: const Text('Open Scanner'),
-            ),
+              child: const Text('Scan QRCODE #1'),
+            )
+            :
+            flitems2.isEmpty ? ElevatedButton(
+              onPressed: () async {
+                var res = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SimpleBarcodeScannerPage(),
+                    ));
+                setState(() {
+                  result = res;
+                  items2 = result.trim().split(",");
+                  var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items2![0]));
+                  etime = double.parse("${time.hour}${time.minute}${time.second}");
+                  items2?.removeAt(0);
+                  var plus15 = 0.0;
+                  flitems2?.clear();
+                  items2?.forEach((e) {
+                    flitems2?.add(FlSpot(etime+plus15,double.parse(e)));
+                    plus15 = plus15 + 10.0;
+                  });
+
+                });
+              },
+              child: const Text('Scan QRCODE #2'),
+            )
+                :
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  result = "";
+                  etime = 0.0;
+                  items?.clear();
+                  items2?.clear();
+                  flitems.clear();
+                  flitems2.clear();
+                                                    });
+              },
+              child: const Text('RENEW'),
+            )
+            ,
             Text(
-              'barcode: $result\ntime: $etime',
+              '',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            flitems.isNotEmpty ? LineChartSample6() : const Text('')
           ],
 
         ),
       ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () { _incrementCounter();},
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
       // This trailing comma makes auto-formatting nicer for build methods.
     );
@@ -209,14 +184,9 @@ class LineChartSample6 extends StatelessWidget {
   final Color line2Color2;
 
 
-  final spots = flitems;
+ final spots = flitems;
 
-  final spots2 = const [
-    FlSpot(0, 1),
-    FlSpot(3, 4),
-    FlSpot(7, 3),
-    FlSpot(8, 2),
-  ];
+  final spots2 = flitems2;
 
   late double minSpotX;
   late double maxSpotX;
@@ -295,7 +265,7 @@ class LineChartSample6 extends StatelessWidget {
                 spots: reverseSpots(spots, minSpotY, maxSpotY),
                 isCurved: true,
                 isStrokeCapRound: true,
-                barWidth: 10,
+                barWidth: 8,
                 belowBarData: BarAreaData(
                   show: false,
                 ),
@@ -303,7 +273,7 @@ class LineChartSample6 extends StatelessWidget {
                   show: true,
                   getDotPainter: (spot, percent, barData, index) =>
                       FlDotCirclePainter(
-                        radius: 12,
+                        radius: 4,
                         color: Colors.transparent,
                         strokeColor: Colors.blueGrey,
                       ),
@@ -319,7 +289,7 @@ class LineChartSample6 extends StatelessWidget {
                 spots: reverseSpots(spots2, minSpotY, maxSpotY),
                 isCurved: true,
                 isStrokeCapRound: true,
-                barWidth: 10,
+                barWidth: 8,
                 belowBarData: BarAreaData(
                   show: false,
                 ),
@@ -327,7 +297,7 @@ class LineChartSample6 extends StatelessWidget {
                   show: true,
                   getDotPainter: (spot, percent, barData, index) =>
                       FlDotCirclePainter(
-                        radius: 12,
+                        radius: 4,
                         color: Colors.transparent,
                         strokeColor: Colors.blueGrey,
                       ),
@@ -348,7 +318,7 @@ class LineChartSample6 extends StatelessWidget {
                 sideTitles: SideTitles(
                   showTitles: true,
                   getTitlesWidget: rightTitleWidgets,
-                  reservedSize: 30,
+                  reservedSize: 38,
                 ),
               ),
               bottomTitles: AxisTitles(
@@ -357,7 +327,7 @@ class LineChartSample6 extends StatelessWidget {
               topTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  reservedSize: 32,
+                  reservedSize: 24,
                   getTitlesWidget: topTitleWidgets,
                 ),
               ),
@@ -391,12 +361,14 @@ class LineChartSample6 extends StatelessWidget {
   }
 
   double reverseY(double y, double minX, double maxX) {
-    return (maxX + minX) - y;
+    // return (maxX + minX) - y;
+    return y;
   }
 
   List<FlSpot> reverseSpots(List<FlSpot> inputSpots, double minY, double maxY) {
-    return inputSpots.map((spot) {
-      return spot.copyWith(y: (maxY + minY) - spot.y);
-    }).toList();
+    // return inputSpots.map((spot) {
+    //   return spot.copyWith(y: (maxY + minY) - spot.y);
+    // }).toList();
+    return inputSpots;
   }
 }
