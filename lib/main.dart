@@ -1,8 +1,16 @@
 
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus_web/share_plus_web.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'dart:convert';
+import 'package:widgets_to_image/widgets_to_image.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:camera_web/camera_web.dart';
 
 // 1. 특정영역을 SNS공유로 공유
 
@@ -23,11 +31,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'LoveBeat',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -44,6 +53,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String result = "";
   var etime = 0.0;
+  WidgetsToImageController controller = WidgetsToImageController();
+  Uint8List? bytes;
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +66,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
           children: <Widget>[
             const Text(
-              '4th',
+              '10th',
             ),
-            flitems.isNotEmpty ? LineChartSample6() : const Text(''),
+          WidgetsToImage(
+              controller: controller,
+              child: flitems.isNotEmpty || flitems2.isNotEmpty ? LineChartSample6() : const Text(''),
+            ),
             Text(
               '',
               style: Theme.of(context).textTheme.headlineMedium,
@@ -96,6 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder: (context) => const SimpleBarcodeScannerPage(),
                     ));
                 setState(() {
+                  this.bytes = bytes;
                   result = res;
                   items2 = result.trim().split(",");
                   var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items2![0]));
@@ -131,6 +146,22 @@ class _MyHomePageState extends State<MyHomePage> {
               '',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+
+          flitems2.isNotEmpty ? ElevatedButton(
+          onPressed: () async {
+            final bytes = await controller.capture();
+    setState(() {
+    this.bytes = bytes; });
+    },
+      child: const Icon(Icons.camera),
+    ) : const Text(''),
+
+            flitems2.isNotEmpty ? ElevatedButton(
+              onPressed: () {
+                Share.shareXFiles([XFile.fromData(bytes!)]);
+              },
+              child: const Icon(Icons.share),
+            ) : const Text(''),
           ],
 
         ),
