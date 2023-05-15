@@ -40,7 +40,6 @@ dependencies:
   share_plus: ^7.0.0
   screenshot: ^2.1.0
   path_provider: ^2.0.15
-  universal_io: ^2.2.1
 
 dev_dependencies:
   flutter_test:
