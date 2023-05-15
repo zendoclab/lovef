@@ -1,16 +1,16 @@
 
 import 'dart:io';
+import 'package:universal_io/io.dart';
 import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:share_plus_web/share_plus_web.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'dart:convert';
-import 'package:widgets_to_image/widgets_to_image.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:camera_web/camera_web.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:path_provider/path_provider.dart';
 
 // 1. 특정영역을 SNS공유로 공유
 
@@ -53,8 +53,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String result = "";
   var etime = 0.0;
-  WidgetsToImageController controller = WidgetsToImageController();
-  Uint8List? bytes;
+  Uint8List? _imageFile;
+  late XFile xfi;
+
+  ScreenshotController screenshotController = ScreenshotController();
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +68,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
           children: <Widget>[
             const Text(
-              '10th',
+              '14th',
             ),
-          WidgetsToImage(
-              controller: controller,
+            Screenshot(
+              controller: screenshotController,
               child: flitems.isNotEmpty || flitems2.isNotEmpty ? LineChartSample6() : const Text(''),
             ),
             Text(
@@ -110,7 +112,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder: (context) => const SimpleBarcodeScannerPage(),
                     ));
                 setState(() {
-                  this.bytes = bytes;
                   result = res;
                   items2 = result.trim().split(",");
                   var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items2![0]));
@@ -148,20 +149,35 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
 
           flitems2.isNotEmpty ? ElevatedButton(
-          onPressed: () async {
-            final bytes = await controller.capture();
-    setState(() {
-    this.bytes = bytes; });
-    },
-      child: const Icon(Icons.camera),
-    ) : const Text(''),
+          onPressed: ()  async {
+            await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
+              if (image != null) {
+                final directory = await getApplicationDocumentsDirectory();
+                final imagePath = await File('${directory.path}/assets/lf1.PNG').create();
 
-            flitems2.isNotEmpty ? ElevatedButton(
-              onPressed: () {
-                Share.shareXFiles([XFile.fromData(bytes!)]);
-              },
+                // await imagePath.writeAsBytes(image);
+                xfi = XFile(imagePath.path);
+              }
+            });
+    },
+
+      child: const Icon(Icons.share),
+    ) : const Text(''),
+            ElevatedButton(
+              onPressed: ()  async {
+                    final directory = await getApplicationDocumentsDirectory();
+                    xfi = XFile('/assets/lf1.PNG');
+                  },
               child: const Icon(Icons.share),
-            ) : const Text(''),
+            ),
+            InkWell(
+              child: ElevatedButton(
+                onPressed: () {
+                  Share.shareXFiles([xfi]);
+                },
+                child: const Icon(Icons.done),
+              )
+            )
           ],
 
         ),
