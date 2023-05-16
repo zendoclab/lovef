@@ -10,6 +10,7 @@ import 'dart:convert';
 import 'package:share_plus/share_plus.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:file_saver/file_saver.dart';
 
 // 1. 특정영역을 SNS공유로 공유
 
@@ -67,11 +68,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
           children: <Widget>[
             const Text(
-              '14th',
+              '15th',
             ),
             Screenshot(
               controller: screenshotController,
-              child: flitems.isNotEmpty || flitems2.isNotEmpty ? LineChartSample6() : const Text(''),
+              child: flitems.isNotEmpty || flitems2.isNotEmpty ? LineChartSample6() : const Text('CHART\nCHARTY'),
             ),
             Text(
               '',
@@ -151,12 +152,14 @@ class _MyHomePageState extends State<MyHomePage> {
           onPressed: ()  async {
             await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
               if (image != null) {
-                final directory = await getApplicationDocumentsDirectory();
-                final imagePath = await File('${directory.path}/assets/lf1.PNG').create();
+                _imageFile = image;
+                // final directory = await getApplicationDocumentsDirectory();
+                // final imagePath = await File('${directory.path}/images.PNG').create();
 
                 // await imagePath.writeAsBytes(image);
-                xfi = XFile(imagePath.path);
+                // xfi = XFile(imagePath.path);
               }
+
             });
     },
 
@@ -164,15 +167,30 @@ class _MyHomePageState extends State<MyHomePage> {
     ) : const Text(''),
             ElevatedButton(
               onPressed: ()  async {
-                    final directory = await getApplicationDocumentsDirectory();
-                    xfi = XFile('/assets/lf1.PNG');
+                    // final directory = await getApplicationDocumentsDirectory();
+                    // xfi = XFile('/assets/lf1.PNG');
+                await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
+                  if (image != null) {
+                    _imageFile = image;
+                    // final directory = await getApplicationDocumentsDirectory();
+                    // final imagePath = await File('${directory.path}/images.PNG').create();
+
+                    // await imagePath.writeAsBytes(image);
+                    // xfi = XFile(imagePath.path);
+                  }
+
+                });
                   },
               child: const Icon(Icons.share),
             ),
             InkWell(
               child: ElevatedButton(
                 onPressed: () {
-                  Share.shareXFiles([xfi]);
+                  FileSaver.instance.saveFile(
+                      name: "ShareIt.png",
+                      bytes: _imageFile,
+                  ext: 'png');
+                  // Share.shareXFiles([xfi]);
                 },
                 child: const Icon(Icons.done),
               )
