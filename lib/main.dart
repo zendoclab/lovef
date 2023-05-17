@@ -1,16 +1,21 @@
 
 import 'dart:io';
-import 'dart:typed_data';
-import 'dart:ui';
-
+import 'dart:developer';
+import 'dart:js_interop';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'dart:convert';
 import 'package:share_plus/share_plus.dart';
 import 'package:screenshot/screenshot.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:file_saver/file_saver.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:html' as html; //ignore: avoid_web_libraries_in_flutter
+import 'dart:js' as js;
+import 'package:flutter/material.dart';
+import 'package:widgets_to_image/widgets_to_image.dart';
 
 // 1. 특정영역을 SNS공유로 공유
 
@@ -54,9 +59,19 @@ class _MyHomePageState extends State<MyHomePage> {
   String result = "";
   var etime = 0.0;
   Uint8List? _imageFile;
+  Uint8List? _imageFile1;
   late XFile xfi;
+  var _imageBool = false;
+  var _imageBool1 = false;
 
+  WidgetsToImageController controller = WidgetsToImageController();
   ScreenshotController screenshotController = ScreenshotController();
+
+  void saveImg(Uint8List? bytes, String fileName) =>
+      js.context.callMethod("saveAs", [
+        html.Blob([bytes]),
+        fileName
+      ]);
 
   @override
   Widget build(BuildContext context) {
@@ -68,11 +83,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
           children: <Widget>[
             const Text(
-              '15th',
+              '29th',
             ),
             Screenshot(
               controller: screenshotController,
-              child: flitems.isNotEmpty || flitems2.isNotEmpty ? LineChartSample6() : const Text('CHART\nCHARTY'),
+              child: flitems.isNotEmpty || flitems2.isNotEmpty ? LineChartSample6() : const Text('CHARTY\nCHARTY!'),
+            ),
+            WidgetsToImage(
+              controller: controller,
+              child: const Text('WIDGET\nTOIMAGE!'),
             ),
             Text(
               '',
@@ -125,6 +144,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   });
 
                 });
+                await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
+                  if (image != null) {
+                    _imageFile = image;
+                  }
+
+                });
               },
               child: const Text('Scan QRCODE #2'),
             )
@@ -147,31 +172,17 @@ class _MyHomePageState extends State<MyHomePage> {
               '',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-
-          flitems2.isNotEmpty ? ElevatedButton(
-          onPressed: ()  async {
-            await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
-              if (image != null) {
-                _imageFile = image;
-                // final directory = await getApplicationDocumentsDirectory();
-                // final imagePath = await File('${directory.path}/images.PNG').create();
-
-                // await imagePath.writeAsBytes(image);
-                // xfi = XFile(imagePath.path);
-              }
-
-            });
-    },
-
-      child: const Icon(Icons.share),
-    ) : const Text(''),
             ElevatedButton(
-              onPressed: ()  async {
+              onPressed: ()  {
                     // final directory = await getApplicationDocumentsDirectory();
                     // xfi = XFile('/assets/lf1.PNG');
-                await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
+                screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
                   if (image != null) {
-                    _imageFile = image;
+                    setState(() {
+                      _imageFile = image;
+                      _imageBool = true;
+                    });
+
                     // final directory = await getApplicationDocumentsDirectory();
                     // final imagePath = await File('${directory.path}/images.PNG').create();
 
@@ -180,20 +191,29 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
 
                 });
+
                   },
               child: const Icon(Icons.share),
             ),
             InkWell(
               child: ElevatedButton(
                 onPressed: () {
-                  FileSaver.instance.saveFile(
-                      name: "ShareIt.png",
-                      bytes: _imageFile,
-                  ext: 'png');
-                  // Share.shareXFiles([xfi]);
+                  saveImg(_imageFile, "downloadImg.png");
                 },
                 child: const Icon(Icons.done),
               )
+            ),
+            !_imageBool ?
+            Center(
+              child: const Text(""),
+            ) : Center(
+              child: Image.memory(_imageFile!),
+            ),
+            !_imageBool1 ?
+            Center(
+              child: const Text(""),
+            ) : Center(
+              child: Image.memory(_imageFile1!),
             )
           ],
 
