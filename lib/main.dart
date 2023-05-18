@@ -17,6 +17,8 @@ import 'dart:js' as js;
 import 'package:flutter/material.dart';
 import 'package:widgets_to_image/widgets_to_image.dart';
 
+
+
 // 1. 특정영역을 SNS공유로 공유
 
 List<String>? items;
