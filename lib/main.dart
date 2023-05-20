@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'dart:js_interop';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_barcode_scanner/enum.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'dart:convert';
 import 'package:share_plus/share_plus.dart';
@@ -85,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
           children: <Widget>[
             const Text(
-              '29th',
+              '64th',
             ),
             Screenshot(
               controller: screenshotController,
@@ -105,7 +106,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 var res = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const SimpleBarcodeScannerPage(),
+                      builder: (context) => const SimpleBarcodeScannerPage(
+                        scanType: ScanType.qr,
+                      ),
                     ));
                 setState(() {
                   result = res;
