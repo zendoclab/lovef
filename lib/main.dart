@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/enum.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'dart:convert';
-import 'package:share_plus/share_plus.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
@@ -15,8 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:html' as html; //ignore: avoid_web_libraries_in_flutter
 import 'dart:js' as js;
-import 'package:flutter/material.dart';
-import 'package:widgets_to_image/widgets_to_image.dart';
 
 
 
@@ -39,7 +36,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'LoveBeat',
+      title: 'CoupleBeat',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -62,12 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String result = "";
   var etime = 0.0;
   Uint8List? _imageFile;
-  Uint8List? _imageFile1;
-  late XFile xfi;
-  var _imageBool = false;
-  var _imageBool1 = false;
 
-  WidgetsToImageController controller = WidgetsToImageController();
   ScreenshotController screenshotController = ScreenshotController();
 
   void saveImg(Uint8List? bytes, String fileName) =>
@@ -85,16 +77,13 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
 
           children: <Widget>[
-            const Text(
-              '64th',
+            Text(
+              'CoupleBeat',
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Screenshot(
               controller: screenshotController,
-              child: flitems.isNotEmpty || flitems2.isNotEmpty ? LineChartSample6() : const Text('CHARTY\nCHARTY!'),
-            ),
-            WidgetsToImage(
-              controller: controller,
-              child: const Text('WIDGET\nTOIMAGE!'),
+              child: flitems.isNotEmpty || flitems2.isNotEmpty ? LineChartSample6() : const Text(''),
             ),
             Text(
               '',
@@ -125,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 });
               },
-              child: const Text('Scan QRCODE #1'),
+              child: const Text('Scan QRCode 1'),
             )
             :
             flitems2.isEmpty ? ElevatedButton(
@@ -156,70 +145,48 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 });
               },
-              child: const Text('Scan QRCODE #2'),
+              child: const Text('Scan QRCODE 2'),
             )
                 :
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  result = "";
-                  etime = 0.0;
-                  items?.clear();
-                  items2?.clear();
-                  flitems.clear();
-                  flitems2.clear();
-                                                    });
-              },
-              child: const Text('RENEW'),
-            )
-            ,
-            Text(
-              '',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            ElevatedButton(
-              onPressed: ()  {
+                Row(children: [
+                  ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      result = "";
+                      etime = 0.0;
+                      items?.clear();
+                      items2?.clear();
+                      flitems.clear();
+                      flitems2.clear();
+                    });
+                  },
+                  child: const Text('Restart'),
+                ),
+                  ElevatedButton(
+                  onPressed: ()  {
                     // final directory = await getApplicationDocumentsDirectory();
                     // xfi = XFile('/assets/lf1.PNG');
-                screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
-                  if (image != null) {
-                    setState(() {
-                      _imageFile = image;
-                      _imageBool = true;
+                    screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
+                      if (image != null) {
+                        setState(() {
+                          _imageFile = image;
+                          saveImg(_imageFile, "ShareCoupleBeat.png");
+                        });
+
+                        // final directory = await getApplicationDocumentsDirectory();
+                        // final imagePath = await File('${directory.path}/images.PNG').create();
+
+                        // await imagePath.writeAsBytes(image);
+                        // xfi = XFile(imagePath.path);
+                      }
+
                     });
 
-                    // final directory = await getApplicationDocumentsDirectory();
-                    // final imagePath = await File('${directory.path}/images.PNG').create();
 
-                    // await imagePath.writeAsBytes(image);
-                    // xfi = XFile(imagePath.path);
-                  }
-
-                });
 
                   },
-              child: const Icon(Icons.share),
-            ),
-            InkWell(
-              child: ElevatedButton(
-                onPressed: () {
-                  saveImg(_imageFile, "downloadImg.png");
-                },
-                child: const Icon(Icons.done),
-              )
-            ),
-            !_imageBool ?
-            Center(
-              child: const Text(""),
-            ) : Center(
-              child: Image.memory(_imageFile!),
-            ),
-            !_imageBool1 ?
-            Center(
-              child: const Text(""),
-            ) : Center(
-              child: Image.memory(_imageFile1!),
-            )
+                  child: const Icon(Icons.share),
+                ),],)
           ],
 
         ),
