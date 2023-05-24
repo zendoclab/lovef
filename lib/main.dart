@@ -215,6 +215,7 @@ class LineChartSample6 extends StatelessWidget {
     minSpotY = spots.first.y;
     maxSpotY = spots.first.y;
 
+
     for (final spot in spots) {
       if (spot.x > maxSpotX) {
         maxSpotX = spot.x;
@@ -232,6 +233,36 @@ class LineChartSample6 extends StatelessWidget {
         minSpotY = spot.y;
       }
     }
+
+if(spots2.isNotEmpty) {
+  minSpotX2 = spots2.first.x;
+  maxSpotX2 = spots2.first.x;
+  minSpotY2 = spots2.first.y;
+  maxSpotY2 = spots2.first.y;
+
+  for (final spot in spots2) {
+    if (spot.x > maxSpotX2) {
+      maxSpotX2 = spot.x;
+    }
+
+    if (spot.x < minSpotX2) {
+      minSpotX2 = spot.x;
+    }
+
+    if (spot.y > maxSpotY2) {
+      maxSpotY2 = spot.y;
+    }
+
+    if (spot.y < minSpotY2) {
+      minSpotY2 = spot.y;
+    }
+  }
+
+  if (minSpotX > minSpotX2) minSpotX = minSpotX2;
+  if (maxSpotX < maxSpotX2) maxSpotX = maxSpotX2;
+  if (minSpotY > minSpotY2) minSpotY = minSpotY2;
+  if (maxSpotY < maxSpotY2) maxSpotY = maxSpotY2;
+}
   }
 
   final Color line1Color1;
@@ -248,6 +279,11 @@ class LineChartSample6 extends StatelessWidget {
   late double maxSpotX;
   late double minSpotY;
   late double maxSpotY;
+
+  late double minSpotX2;
+  late double maxSpotX2;
+  late double minSpotY2;
+  late double maxSpotY2;
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     final style = TextStyle(
@@ -360,8 +396,8 @@ class LineChartSample6 extends StatelessWidget {
                 ),
               ),
             ],
-            minY: 0,
-            maxY: maxSpotY + minSpotY,
+            minY: minSpotY-10.0,
+            maxY: maxSpotY+10.0,
             titlesData: FlTitlesData(
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(
