@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:html' as html; //ignore: avoid_web_libraries_in_flutter
 import 'dart:js' as js;
+import 'package:url_launcher/url_launcher.dart';
 
 
 
@@ -79,20 +80,40 @@ class _MyHomePageState extends State<MyHomePage> {
     return count;
   }
 
+  _launchURL() async {
+    final Uri url = Uri.parse('https://zendoclab.blogspot.com/2023/05/couplebeat-heart-rate-proves-love.html');
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
+          padding: const EdgeInsets.all(8.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
 
+
           children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
             Text(
               'CoupleBeat',
               style: Theme.of(context).textTheme.titleLarge,
             ),
+          ElevatedButton(
+            onPressed: _launchURL,
+            style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
+            child: const Icon(Icons.question_mark),
+          )
+            ],
+
+        ),
             Text(
               '',
               style: Theme.of(context).textTheme.headlineMedium,
@@ -167,7 +188,9 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Text('Scan QRCODE 2'),
             )
                 :
-                Row(children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
                   ElevatedButton(
                   onPressed: () {
                     setState(() {
@@ -180,7 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     });
                   },
                   child: const Text('Restart'),
-                ),const Spacer(),
+                ),
                   ElevatedButton(
                   onPressed: ()  {
                     // final directory = await getApplicationDocumentsDirectory();
@@ -476,7 +499,7 @@ if(spots2.isNotEmpty) {
             ),
           ),
         ),
-        const Text("couple's heart rate"),
+        const Text("heart rate by couplebeat"),
       ]
       )
     );
