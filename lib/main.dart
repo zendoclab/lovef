@@ -58,7 +58,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String result = "";
+  String result = "aa";
   var etime = 0.0;
   Uint8List? _imageFile;
 
@@ -120,7 +120,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Screenshot(
               controller: screenshotController,
-              child: flitems.isNotEmpty || flitems2.isNotEmpty ? LineChartSample6() : const Text(''),
+              // child: flitems.isNotEmpty || flitems2.isNotEmpty ? LineChartSample6() : const Text(''),
+              child: Text(result.toString()),
             ),
             Text(
               '',
@@ -138,16 +139,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     ));
                 setState(() {
                   result = res;
-                  totalTime = countCommas(result) * 10;
                     items = result.trim().split(",");
+                    var speed = int.parse(items![1]);
+                  totalTime = countCommas(result) * 30 * speed;
                     var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items![0]));
                     etime = double.parse("${time.hour}${time.minute}${time.second}");
                     items?.removeAt(0);
+                  items?.removeAt(0);
                     var plus15 = 0.0;
                     flitems?.clear();
                     items?.forEach((e) {
                       flitems?.add(FlSpot(etime+plus15,double.parse(e)));
-                      plus15 = plus15 + 10.0;
+                      plus15 = plus15 + (30.0 * speed);
                     });
 
                 });
@@ -164,17 +167,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     ));
                 setState(() {
                   result = res;
-                  int totalTime2 = countCommas(result) * 10;
-                  if(totalTime<totalTime2) totalTime = totalTime2;
                   items2 = result.trim().split(",");
+                  var speed1 = int.parse(items2![1]);
+                  int totalTime2 = countCommas(result) * 30 * speed1;
+                  if(totalTime<totalTime2) totalTime = totalTime2;
+
                   var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items2![0]));
                   etime = double.parse("${time.hour}${time.minute}${time.second}");
+                  items2?.removeAt(0);
                   items2?.removeAt(0);
                   var plus15 = 0.0;
                   flitems2?.clear();
                   items2?.forEach((e) {
                     flitems2?.add(FlSpot(etime+plus15,double.parse(e)));
-                    plus15 = plus15 + 10.0;
+                    plus15 = plus15 + (30.0 * speed1);
                   });
 
                 });
