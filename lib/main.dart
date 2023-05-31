@@ -1,17 +1,10 @@
 
-import 'dart:io';
-import 'dart:developer';
-import 'dart:js_interop';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/enum.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
-import 'dart:convert';
 import 'package:screenshot/screenshot.dart';
-import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'dart:html' as html;
 import 'dart:js' as js;
 
