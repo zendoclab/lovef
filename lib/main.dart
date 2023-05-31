@@ -12,9 +12,8 @@ import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:html' as html; //ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
 import 'dart:js' as js;
-import 'package:url_launcher/url_launcher.dart';
 
 
 
@@ -61,7 +60,6 @@ class _MyHomePageState extends State<MyHomePage> {
   String result = "";
   var etime = 0.0;
   Uint8List? _imageFile;
-  Future<void>? _launched;
 
   ScreenshotController screenshotController = ScreenshotController();
 
@@ -81,18 +79,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return count;
   }
 
-  Future<void> _launchInBrowser(Uri url) async {
-    if (!await launchUrl(
-      url,
-      mode: LaunchMode.externalApplication,
-    )) {
-      throw Exception('Could not launch $url');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    final Uri toLaunch = Uri(scheme: 'https', host: 'zendoclab.blogspot.com/2023/05/couplebeat-heart-rate-proves-love.html');
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -110,9 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               ElevatedButton(
-                onPressed: () => setState(() {
-                  _launched = _launchInBrowser(toLaunch);
-                }),
+                onPressed: () => html.window.open('https://zendoclab.blogspot.com/2023/05/couplebeat-heart-rate-proves-love.html',"_blank"),
                 style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
                 child: const Icon(Icons.question_mark),
               )
