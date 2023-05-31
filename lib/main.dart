@@ -34,7 +34,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-    // This widget is the root of your application.
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -58,9 +58,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String result = "aa";
+  String result = "";
   var etime = 0.0;
   Uint8List? _imageFile;
+  Future<void>? _launched;
 
   ScreenshotController screenshotController = ScreenshotController();
 
@@ -80,72 +81,74 @@ class _MyHomePageState extends State<MyHomePage> {
     return count;
   }
 
-  _launchURL() async {
-    final Uri url = Uri.parse('https://zendoclab.blogspot.com/2023/05/couplebeat-heart-rate-proves-love.html');
-    if (!await launchUrl(url)) {
+  Future<void> _launchInBrowser(Uri url) async {
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) {
       throw Exception('Could not launch $url');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final Uri toLaunch = Uri(scheme: 'https', host: 'zendoclab.blogspot.com/2023/05/couplebeat-heart-rate-proves-love.html');
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
 
-
-          children: <Widget>[
-        Row(
+            children: <Widget>[
+          Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Text(
-              'CoupleBeat',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ElevatedButton(
-            onPressed: _launchURL,
-            style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
-            child: const Icon(Icons.question_mark),
-          )
+            children: [
+              Text(
+                'CoupleBeat',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              ElevatedButton(
+                onPressed: () => setState(() {
+                  _launched = _launchInBrowser(toLaunch);
+                }),
+                style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
+                child: const Icon(Icons.question_mark),
+              )
             ],
-
-        ),
-            Text(
-              '',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            Screenshot(
-              controller: screenshotController,
-              // child: flitems.isNotEmpty || flitems2.isNotEmpty ? LineChartSample6() : const Text(''),
-              child: Text(result.toString()),
-            ),
-            Text(
-              '',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            flitems.isEmpty ?
-            ElevatedButton(
-              onPressed: () async {
-                var res = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SimpleBarcodeScannerPage(
-                        scanType: ScanType.qr,
-                      ),
-                    ));
-                setState(() {
-                  result = res;
+          ),
+              Text(
+                '',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              Screenshot(
+                controller: screenshotController,
+                child: flitems.isNotEmpty || flitems2.isNotEmpty ? LineChartSample6() : const Text(''),
+              ),
+              Text(
+                '',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              flitems.isEmpty ?
+              ElevatedButton(
+                onPressed: () async {
+                  var res = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SimpleBarcodeScannerPage(
+                          scanType: ScanType.qr,
+                        ),
+                      ));
+                  setState(() {
+                    result = res;
                     items = result.trim().split(",");
                     var speed = int.parse(items![1]);
-                  totalTime = countCommas(result) * 30 * speed;
+                    totalTime = countCommas(result) * 30 * speed;
                     var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items![0]));
                     etime = double.parse("${time.hour}${time.minute}${time.second}");
                     items?.removeAt(0);
-                  items?.removeAt(0);
+                    items?.removeAt(0);
                     var plus15 = 0.0;
                     flitems?.clear();
                     items?.forEach((e) {
@@ -153,51 +156,48 @@ class _MyHomePageState extends State<MyHomePage> {
                       plus15 = plus15 + (30.0 * speed);
                     });
 
-                });
-              },
-              child: const Text('Scan QRCode 1'),
-            )
-            :
-            flitems2.isEmpty ? ElevatedButton(
-              onPressed: () async {
-                var res = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SimpleBarcodeScannerPage(),
-                    ));
-                setState(() {
-                  result = res;
-                  items2 = result.trim().split(",");
-                  var speed1 = int.parse(items2![1]);
-                  int totalTime2 = countCommas(result) * 30 * speed1;
-                  if(totalTime<totalTime2) totalTime = totalTime2;
-
-                  var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items2![0]));
-                  etime = double.parse("${time.hour}${time.minute}${time.second}");
-                  items2?.removeAt(0);
-                  items2?.removeAt(0);
-                  var plus15 = 0.0;
-                  flitems2?.clear();
-                  items2?.forEach((e) {
-                    flitems2?.add(FlSpot(etime+plus15,double.parse(e)));
-                    plus15 = plus15 + (30.0 * speed1);
                   });
+                },
+                child: const Text('Scan QRCode 1'),
+              )
+                  :
+              flitems2.isEmpty ? ElevatedButton(
+                onPressed: () async {
+                  var res = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SimpleBarcodeScannerPage(),
+                      ));
+                  setState(() {
+                    result = res;
+                    items2 = result.trim().split(",");
+                    var speed1 = int.parse(items2![1]);
+                    int totalTime2 = countCommas(result) * 30 * speed1;
+                    if(totalTime<totalTime2) totalTime = totalTime2;
+                    var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items2![0]));
+                    etime = double.parse("${time.hour}${time.minute}${time.second}");
+                    items2?.removeAt(0);
+                    items2?.removeAt(0);
+                    var plus15 = 0.0;
+                    flitems2?.clear();
+                    items2?.forEach((e) {
+                      flitems2?.add(FlSpot(etime+plus15,double.parse(e)));
+                      plus15 = plus15 + (30.0 * speed1);
+                    });
 
-                });
-                await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
-                  if (image != null) {
-                    _imageFile = image;
-                  }
+                  });
+                  await screenshotController.capture(delay: const Duration(milliseconds: 10)).then((Uint8List? image) async {
+                    if (image != null) {
+                      _imageFile = image;
+                    }
 
-                });
-              },
-              child: const Text('Scan QRCODE 2'),
-            )
-                :
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                  ElevatedButton(
+                  });
+                },
+                child: const Text('Scan QRCODE 2'),
+              )
+                  :
+              Row(children: [
+                ElevatedButton(
                   onPressed: () {
                     setState(() {
                       result = "";
@@ -209,8 +209,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     });
                   },
                   child: const Text('Restart'),
-                ),
-                  ElevatedButton(
+                ),const Spacer(),
+                ElevatedButton(
                   onPressed: ()  {
                     // final directory = await getApplicationDocumentsDirectory();
                     // xfi = XFile('/assets/lf1.PNG');
@@ -235,10 +235,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                   child: const Icon(Icons.share),
                 ),],)
-          ],
+            ],
 
+          ),
         ),
-      ),
       ),
       // This trailing comma makes auto-formatting nicer for build methods.
     );
@@ -282,35 +282,35 @@ class LineChartSample6 extends StatelessWidget {
       }
     }
 
-if(spots2.isNotEmpty) {
-  minSpotX2 = spots2.first.x;
-  maxSpotX2 = spots2.first.x;
-  minSpotY2 = spots2.first.y;
-  maxSpotY2 = spots2.first.y;
+    if(spots2.isNotEmpty) {
+      minSpotX2 = spots2.first.x;
+      maxSpotX2 = spots2.first.x;
+      minSpotY2 = spots2.first.y;
+      maxSpotY2 = spots2.first.y;
 
-  for (final spot in spots2) {
-    if (spot.x > maxSpotX2) {
-      maxSpotX2 = spot.x;
+      for (final spot in spots2) {
+        if (spot.x > maxSpotX2) {
+          maxSpotX2 = spot.x;
+        }
+
+        if (spot.x < minSpotX2) {
+          minSpotX2 = spot.x;
+        }
+
+        if (spot.y > maxSpotY2) {
+          maxSpotY2 = spot.y;
+        }
+
+        if (spot.y < minSpotY2) {
+          minSpotY2 = spot.y;
+        }
+      }
+
+      if (minSpotX > minSpotX2) minSpotX = minSpotX2;
+      if (maxSpotX < maxSpotX2) maxSpotX = maxSpotX2;
+      if (minSpotY > minSpotY2) minSpotY = minSpotY2;
+      if (maxSpotY < maxSpotY2) maxSpotY = maxSpotY2;
     }
-
-    if (spot.x < minSpotX2) {
-      minSpotX2 = spot.x;
-    }
-
-    if (spot.y > maxSpotY2) {
-      maxSpotY2 = spot.y;
-    }
-
-    if (spot.y < minSpotY2) {
-      minSpotY2 = spot.y;
-    }
-  }
-
-  if (minSpotX > minSpotX2) minSpotX = minSpotX2;
-  if (maxSpotX < maxSpotX2) maxSpotX = maxSpotX2;
-  if (minSpotY > minSpotY2) minSpotY = minSpotY2;
-  if (maxSpotY < maxSpotY2) maxSpotY = maxSpotY2;
-}
   }
 
   final Color line1Color1;
@@ -319,7 +319,7 @@ if(spots2.isNotEmpty) {
   final Color line2Color2;
 
 
- final spots = flitems;
+  final spots = flitems;
 
   final spots2 = flitems2;
 
@@ -394,120 +394,120 @@ if(spots2.isNotEmpty) {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 22, bottom: 20),
-      child: Column(children: [
-        Text(secondsToMinuteSecond(totalTime)),
-        AspectRatio(
-          aspectRatio: 2,
-          child: LineChart(
-            LineChartData(
-              lineTouchData: LineTouchData(enabled: false),
-              lineBarsData: [
-                LineChartBarData(
-                  gradient: LinearGradient(
-                    colors: [
-                      line1Color1,
-                      line1Color2,
-                    ],
+        padding: const EdgeInsets.only(right: 22, bottom: 20),
+        child: Column(children: [
+          Text(secondsToMinuteSecond(totalTime)),
+          AspectRatio(
+            aspectRatio: 2,
+            child: LineChart(
+              LineChartData(
+                lineTouchData: LineTouchData(enabled: false),
+                lineBarsData: [
+                  LineChartBarData(
+                    gradient: LinearGradient(
+                      colors: [
+                        line1Color1,
+                        line1Color2,
+                      ],
+                    ),
+                    spots: reverseSpots(spots, minSpotY, maxSpotY),
+                    isCurved: true,
+                    isStrokeCapRound: true,
+                    barWidth: 8,
+                    belowBarData: BarAreaData(
+                      show: false,
+                    ),
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (spot, percent, barData, index) =>
+                          FlDotCirclePainter(
+                            radius: 4,
+                            color: Colors.transparent,
+                            strokeColor: Colors.blueGrey,
+                          ),
+                    ),
                   ),
-                  spots: reverseSpots(spots, minSpotY, maxSpotY),
-                  isCurved: true,
-                  isStrokeCapRound: true,
-                  barWidth: 8,
-                  belowBarData: BarAreaData(
-                    show: false,
+                  LineChartBarData(
+                    gradient: LinearGradient(
+                      colors: [
+                        line2Color1,
+                        line2Color2,
+                      ],
+                    ),
+                    spots: reverseSpots(spots2, minSpotY, maxSpotY),
+                    isCurved: true,
+                    isStrokeCapRound: true,
+                    barWidth: 8,
+                    belowBarData: BarAreaData(
+                      show: false,
+                    ),
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (spot, percent, barData, index) =>
+                          FlDotCirclePainter(
+                            radius: 4,
+                            color: Colors.transparent,
+                            strokeColor: Colors.blueGrey,
+                          ),
+                    ),
                   ),
-                  dotData: FlDotData(
-                    show: true,
-                    getDotPainter: (spot, percent, barData, index) =>
-                        FlDotCirclePainter(
-                          radius: 4,
-                          color: Colors.transparent,
-                          strokeColor: Colors.blueGrey,
-                        ),
+                ],
+                minY: minSpotY-10.0,
+                maxY: maxSpotY+10.0,
+                titlesData: FlTitlesData(
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: leftTitleWidgets,
+                      reservedSize: 38,
+                    ),
+                  ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: rightTitleWidgets,
+                      reservedSize: 38,
+                    ),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 24,
+                      getTitlesWidget: topTitleWidgets,
+                    ),
                   ),
                 ),
-                LineChartBarData(
-                  gradient: LinearGradient(
-                    colors: [
-                      line2Color1,
-                      line2Color2,
-                    ],
-                  ),
-                  spots: reverseSpots(spots2, minSpotY, maxSpotY),
-                  isCurved: true,
-                  isStrokeCapRound: true,
-                  barWidth: 8,
-                  belowBarData: BarAreaData(
-                    show: false,
-                  ),
-                  dotData: FlDotData(
-                    show: true,
-                    getDotPainter: (spot, percent, barData, index) =>
-                        FlDotCirclePainter(
-                          radius: 4,
-                          color: Colors.transparent,
-                          strokeColor: Colors.blueGrey,
-                        ),
-                  ),
-                ),
-              ],
-              minY: minSpotY-10.0,
-              maxY: maxSpotY+10.0,
-              titlesData: FlTitlesData(
-                leftTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    getTitlesWidget: leftTitleWidgets,
-                    reservedSize: 38,
-                  ),
-                ),
-                rightTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    getTitlesWidget: rightTitleWidgets,
-                    reservedSize: 38,
-                  ),
-                ),
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-                topTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    reservedSize: 24,
-                    getTitlesWidget: topTitleWidgets,
-                  ),
-                ),
-              ),
-              gridData: FlGridData(
-                show: true,
-                drawVerticalLine: true,
-                checkToShowHorizontalLine: (value) {
-                  final intValue = reverseY(value, minSpotY, maxSpotY).toInt();
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: true,
+                  checkToShowHorizontalLine: (value) {
+                    final intValue = reverseY(value, minSpotY, maxSpotY).toInt();
 
-                  if (intValue == (maxSpotY + minSpotY).toInt()) {
-                    return false;
-                  }
+                    if (intValue == (maxSpotY + minSpotY).toInt()) {
+                      return false;
+                    }
 
-                  return true;
-                },
-              ),
-              borderData: FlBorderData(
-                show: true,
-                border: const Border(
-                  left: BorderSide(color: Colors.white24),
-                  top: BorderSide(color: Colors.white24),
-                  bottom: BorderSide(color: Colors.transparent),
-                  right: BorderSide(color: Colors.transparent),
+                    return true;
+                  },
+                ),
+                borderData: FlBorderData(
+                  show: true,
+                  border: const Border(
+                    left: BorderSide(color: Colors.white24),
+                    top: BorderSide(color: Colors.white24),
+                    bottom: BorderSide(color: Colors.transparent),
+                    right: BorderSide(color: Colors.transparent),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        const Text("heart rate by couplebeat"),
-      ]
-      )
+          const Text("heart rate by couplebeat"),
+        ]
+        )
     );
   }
 
