@@ -85,10 +85,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
             children: <Widget>[
           Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'CoupleBeat',
+                'couplebeat   ',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               ElevatedButton(
@@ -125,8 +125,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     items = result.trim().split(",");
                     var speed = int.parse(items![1]);
                     totalTime = countCommas(result) * 30 * speed;
-                    var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items![0]));
-                    etime = double.parse("${time.hour}${time.minute}${time.second}");
+                    // var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items![0]));
+                    etime = double.parse(items![0]);
                     items?.removeAt(0);
                     items?.removeAt(0);
                     var plus15 = 0.0;
@@ -154,8 +154,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     var speed1 = int.parse(items2![1]);
                     int totalTime2 = countCommas(result) * 30 * speed1;
                     if(totalTime<totalTime2) totalTime = totalTime2;
-                    var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items2![0]));
-                    etime = double.parse("${time.hour}${time.minute}${time.second}");
+                    // var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items2![0]));
+                    etime = double.parse(items2![0]);
                     items2?.removeAt(0);
                     items2?.removeAt(0);
                     var plus15 = 0.0;
@@ -188,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       flitems2.clear();
                     });
                   },
-                  child: const Text('Restart'),
+                  child: const Icon(Icons.redo),
                 ),const Spacer(),
                 ElevatedButton(
                   onPressed: ()  {
@@ -348,7 +348,7 @@ class LineChartSample6 extends StatelessWidget {
       return Text('', style: style);
     }
 
-    return Text(intValue.toString(), style: style, textAlign: TextAlign.right);
+    return Text(intValue.toString().substring(8,12), style: style, textAlign: TextAlign.right);
   }
 
   Widget topTitleWidgets(double value, TitleMeta meta) {
@@ -466,7 +466,7 @@ class LineChartSample6 extends StatelessWidget {
                   checkToShowHorizontalLine: (value) {
                     final intValue = reverseY(value, minSpotY, maxSpotY).toInt();
 
-                    if (intValue == (maxSpotY + minSpotY).toInt()) {
+                    if (intValue == (minSpotY).toInt()) {
                       return false;
                     }
 
