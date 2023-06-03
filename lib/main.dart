@@ -124,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     result = res;
                     items = result.trim().split(",");
                     var speed = int.parse(items![1]);
-                    totalTime = countCommas(result) * 30 * speed;
+                    totalTime = (countCommas(result) -1) * 30 * speed;
                     // var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items![0]));
                     etime = double.parse(items![0]);
                     items?.removeAt(0);
@@ -152,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     result = res;
                     items2 = result.trim().split(",");
                     var speed1 = int.parse(items2![1]);
-                    int totalTime2 = countCommas(result) * 30 * speed1;
+                    int totalTime2 = (countCommas(result) -1 ) * 30 * speed1;
                     if(totalTime<totalTime2) totalTime = totalTime2;
                     // var time = DateTime.fromMillisecondsSinceEpoch(int.parse(items2![0]));
                     etime = double.parse(items2![0]);
@@ -188,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       flitems2.clear();
                     });
                   },
-                  child: const Icon(Icons.redo),
+                  child: const Icon(Icons.refresh),
                 ),const Spacer(),
                 ElevatedButton(
                   onPressed: ()  {
@@ -348,7 +348,7 @@ class LineChartSample6 extends StatelessWidget {
       return Text('', style: style);
     }
 
-    return Text(intValue.toString().substring(8,12), style: style, textAlign: TextAlign.right);
+    return Text(intValue.toString(), style: style, textAlign: TextAlign.right);
   }
 
   Widget topTitleWidgets(double value, TitleMeta meta) {
@@ -361,7 +361,7 @@ class LineChartSample6 extends StatelessWidget {
     );
     return SideTitleWidget(
       axisSide: meta.axisSide,
-      child: Text(value.toInt().toString(), style: style),
+      child: Text(value.toString().substring(6,9), style: style),
     );
   }
 
@@ -417,7 +417,7 @@ class LineChartSample6 extends StatelessWidget {
                     spots: reverseSpots(spots2, minSpotY, maxSpotY),
                     isCurved: true,
                     isStrokeCapRound: true,
-                    barWidth: 8,
+                    barWidth: 4,
                     belowBarData: BarAreaData(
                       show: false,
                     ),
@@ -425,7 +425,7 @@ class LineChartSample6 extends StatelessWidget {
                       show: true,
                       getDotPainter: (spot, percent, barData, index) =>
                           FlDotCirclePainter(
-                            radius: 4,
+                            radius: 2,
                             color: Colors.transparent,
                             strokeColor: Colors.blueGrey,
                           ),
