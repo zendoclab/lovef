@@ -393,7 +393,7 @@ class LineChartSample6 extends StatelessWidget {
                     spots: reverseSpots(spots, minSpotY, maxSpotY),
                     isCurved: true,
                     isStrokeCapRound: true,
-                    barWidth: 8,
+                    barWidth: 4,
                     belowBarData: BarAreaData(
                       show: false,
                     ),
@@ -401,7 +401,7 @@ class LineChartSample6 extends StatelessWidget {
                       show: true,
                       getDotPainter: (spot, percent, barData, index) =>
                           FlDotCirclePainter(
-                            radius: 4,
+                            radius: 2,
                             color: Colors.transparent,
                             strokeColor: Colors.blueGrey,
                           ),
